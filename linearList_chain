@@ -43,7 +43,7 @@ public:
 };
 template<typename T>
 Chain<T>::Chain(int capacity_) {
-    if (capacity < 1) throw(illegalParameterValue());
+    if (capacity < 1) throw illegalParameterValue();
     Size = 0;
     header = nullptr;
 }
@@ -116,7 +116,7 @@ void Chain<T>::erase(int index) {
 }
 template<typename T>
 void Chain<T>::insert(int index, const T& tmp) {
-    if (index < 0 || index > Size) throw(illegalParameterValue());
+    if (index < 0 || index > Size) throw illegalParameterValue();
     if (index == 0)
         header = new chainNode<T>(tmp, header);
     else {
