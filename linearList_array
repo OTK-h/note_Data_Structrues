@@ -12,10 +12,10 @@ public:
 };
 
 template<typename T>
-void ChangeArrayCapacity(T& tar, int OldLength, int NewLength) {
-    if (NewLength < 0) throw(illegalParameterValue());
+void changeArrayCapacity(T& tar, int OldLength, int NewLength) {
+    if (NewLength < 0) throw illegalParameterValue();
     T* tmp = new T[NewLength];
-    copy(tar, tar + min(OldLenngth, NewLength), tmp);
+    copy(tar, tar + min(OldLength, NewLength), tmp);
     delete[]tar;
     tar = tmp;
 }
@@ -46,7 +46,7 @@ public:
 };
 template<typename T>
 arrayList<T>::arrayList(int capacity_) {
-    if (capacity < 1) throw(illegalParameterValue());
+    if (capacity < 1) throw illegalParameterValue();
     Capacity = capacity_;
     Size = 0;
     Elements = new T[Capacity];
@@ -64,7 +64,7 @@ arrayList<T>::~arrayList() {
 }
 template<typename T>
 void arrayList<T>::checkIndex(int index) const {
-    if (index < 0 || index >= Size) throw(illegalIndex());
+    if (index < 0 || index >= Size) throw illegalParameterValue();
 }
 template<typename T>
 T& arrayList<T>::get(int index) const {
@@ -85,9 +85,9 @@ void arrayList<T>::erase(int index) {
 }
 template<typename T>
 void arrayList<T>::insert(int index, const T& tmp) {
-    if (index < 0 || index > Size) throw(illegalParameterValue());
+    if (index < 0 || index > Size) throw illegalParameterValue();
     if (Size == Capacity) {
-        ChangearrayList(Elements, Capacity, 2 * Capacity);
+        changeArrayCapacity(Elements, Capacity, 2 * Capacity);
         Capacity *= 2;
     }
     std::copy_backward(Elements + index, Elements + Size, Elements + index + 1);
@@ -131,7 +131,7 @@ public:
 };
 template<typename T>
 vectorList<T>::vectorList(int capacity_) {
-    if (capacity < 1) throw(illegalParameterValue());
+    if (capacity < 1) throw illegalParameterValue();
     ELements = new vector<T>;
     Elements->reserve(capacity_);
     //resize()
@@ -147,7 +147,7 @@ vectorList<T>::~vectorList() {
 template<typename T>
 void vectorList<T>::checkIndex(int index) const {
     if (index < 0 || index >= Elements->size())
-        throw(illegalParameterValue());
+        throw illegalParameterValue();
 }
 template<typename T>
 T& vectorList<T>::get(int index) const {
@@ -165,6 +165,6 @@ void vectorList<T>::erase(int index) {
 }
 template<typename T>
 void vectorList<T>::insert(int index, const T& tmp) {
-    if (index < 0 || index > Size) throw(illegalParameterValue());
+    if (index < 0 || index > Size) throw illegalParameterValue();
     Elements->insert(Elements->begin() + index, tmp);
 }
