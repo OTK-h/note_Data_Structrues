@@ -1,0 +1,173 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+template<typename T>
+class linearList {
+public:
+    virtual ~linerList() {};
+    virtual bool empty() const = 0;
+    virtual int size() const = 0;
+    virtual T& get(int index) const = 0;
+    virtual int indexOf(const T& tmp) const = 0;
+    virtual void erase(int index) = 0;
+    virtual void insert(int index, const T& tmp) = 0;
+    virtual void output(ostream& out) const = 0;
+};
+
+template<typename T>
+void ChangeArrayCapacity(T& tar, int OldLength, int NewLength) {
+    if (NewLength < 0) throw(illegalParameterValue());
+    T* tmp = new T[NewLength];
+    copy(tar, tar + min(OldLenngth, NewLength), tmp);
+    delete[]tar;
+    tar = tmp;
+}
+
+
+//Array
+template<typename T>
+class arrayList : public LinearList<T> {
+protected:
+    T* ELements;
+    int Capacity;
+    int Size;
+    void checkIndex(int index) const;
+public:
+    arrayList(int capacity_ = 10);
+    arrayList(const arrayList<T>& tmp);
+    ~arrayList();
+
+    bool empty() const { return Size == 0; }
+    int size() const { return Size; }
+    T& get(int index) const;
+    int indexOf(const T& tmp) const;
+    void erase(int index);
+    void insert(int index, const T& tmp);
+    void output(ostream& out) const;
+
+    int capacity() const { return Capacity; }
+};
+template<typename T>
+arrayList<T>::arrayList(int capacity_) {
+    if (capacity < 1) throw(illegalParameterValue());
+    Capacity = capacity_;
+    Size = 0;
+    Elements = new T[Capacity];
+}
+template<typename T>
+arrayList<T>::arrayList(const arrayList<T>& tmp) {
+    Capacity = tmp.Capacity;
+    Size = tmp.Size;
+    Elements = new T[Capacity];
+    std::copy(tmp.Elements, tmp.Elements + Size, ELements);
+}
+template<typename T>
+arrayList<T>::~arrayList() {
+    delete[]Elements;
+}
+template<typename T>
+void arrayList<T>::checkIndex(int index) const {
+    if (index < 0 || index >= Size) throw(illegalIndex());
+}
+template<typename T>
+T& arrayList<T>::get(int index) const {
+    checkIndex(index);
+    return Elements[index]
+}
+template<typename T>
+int arrayList<T>::indexOf(const T& tmp) const {
+    int ret = (int)(std::find(Elements, Elements + Size, tmp) - Elements);
+    if (ret == Size) return -1;
+    return ret;
+}
+template<typename T>
+void arrayList<T>::erase(int index) {
+    checkIndex(index);
+    std::copy(Elements + index + 1, Elements + Size, Elements + index);
+    Elements[--Size].~T();
+}
+template<typename T>
+void arrayList<T>::insert(int index, const T& tmp) {
+    if (index < 0 || index > Size) throw(illegalParameterValue());
+    if (Size == Capacity) {
+        ChangearrayList(Elements, Capacity, 2 * Capacity);
+        Capacity *= 2;
+    }
+    std::copy_backward(Elements + index, Elements + Size, Elements + index + 1);
+    Elements[index] = tmp;
+    Size++;
+}
+template<typename T>
+void arrayList<T>::output(ostream& out) const {
+    std::copy(Elements, Elements + Size, ostream_iterator<T>(cout, ""));
+}
+template<typename T>
+ostream& operator << (ostream& out, const arrayList<T>& tmp) {
+    tmp.output(out);
+    return out;
+}
+
+
+//Vector
+template<typename T>
+class vectorList : public linearList<T> {
+protected:
+    std::vector<T>* Elements;
+    void checkIndex(int index) const;
+public:
+    vectorList(int capacity_ = 10);
+    vectorList(const vectorList<T>& tmp);
+    ~vectorList();
+
+    bool empty() const { return Elements->empty(); }
+    int size() const { return Elements->size(); }
+    T& get(int index) const;
+    int indexOf(const T& tmp) const;
+    void erase(int index);
+    void insert(int index, const T& tmp);
+    void output(ostream& out) const;
+
+    vector<T>::iterator begin();
+    vector<T>::iterator end();
+
+    int capacity() const;
+};
+template<typename T>
+vectorList<T>::vectorList(int capacity_) {
+    if (capacity < 1) throw(illegalParameterValue());
+    ELements = new vector<T>;
+    Elements->reserve(capacity_);
+    //resize()
+}
+template<typename T>
+vectorList<T>::vectorList(const vectorList<T>& tmp) {
+    Elements = new vector<T>(*tmp.Elements);
+}
+template<typename T>
+vectorList<T>::~vectorList() {
+    delete Elements;
+}
+template<typename T>
+void vectorList<T>::checkIndex(int index) const {
+    if (index < 0 || index >= Elements->size())
+        throw(illegalParameterValue());
+}
+template<typename T>
+T& vectorList<T>::get(int index) const {
+    checkIndex(index);
+    //todo
+}
+template<typename T>
+int vectorList<T>::capacity() const {
+    return Elements->capacity();
+}
+template<typename T>
+void vectorList<T>::erase(int index) {
+    checkIndex(index);
+    Elements->erase(Elements.begin() + index);
+}
+template<typename T>
+void vectorList<T>::insert(int index, const T& tmp) {
+    if (index < 0 || index > Size) throw(illegalParameterValue());
+    Elements->insert(Elements->begin() + index, tmp);
+}
