@@ -1,0 +1,163 @@
+template<typename T>
+class linearList {
+public:
+    virtual ~linerList() {};
+    virtual bool empty() const = 0;
+    virtual int size() const = 0;
+    virtual T& get(int index) const = 0;
+    virtual int indexOf(const T& tmp) const = 0;
+    virtual void erase(int index) = 0;
+    virtual void insert(int index, const T& tmp) = 0;
+    virtual void output(ostream& out) const = 0;
+};
+
+template<typename T>
+struct chainNode {
+    T element;
+    chainNode<T>* next;
+
+    chainNode() {}
+    chainNode(const T& ele) { element = ele; }
+    chainNode(const T& ele, chainNode<T>* nxt) { element = ele; next = nxt; }
+};
+template<typename T>
+class Chain : public linearList<T> {
+protected:
+    chainNode<T>* header;
+    int Size;
+    void checkIndex(int index) const;
+public:
+    Chain(int capacity_ = 10);
+    Chain(const Chain<T>& tmp);
+    ~Chain();
+
+    bool empty() const;
+    int size() const;
+    T& get(int index) const;
+    int indexOf(const T& tmp) const;
+    void erase(int index);
+    void insert(int index, const T& tmp);
+    void output(ostream& out) const;
+
+    void binSort(int range);
+};
+template<typename T>
+Chain<T>::Chain(int capacity_) {
+    if (capacity < 1) throw(illegalParameterValue());
+    Size = 0;
+    header = nullptr;
+}
+template<typename T>
+Chain<T>::Chain(const Chain<T>& tmp) {
+    Size = tmp.Size;
+    if (Size == 0) {
+        header = nullptr;
+        return;
+    }
+    header = new Chain<T>(tmp.header->element);
+    chainNode<T>* nxt = tmp.header->next;
+    chainNode<T>* cur = header;
+    while (nxt != nullptr) {
+        nur->next = new chainNode(nxt);
+        nxt = nxt->next;
+        cur = cur->next;
+    }
+    nur->next = nullptr;
+}
+template<typename T>
+Chain<T>::~Chain() {
+    while (header != nullptr) {
+        chainNode<T>* p = header;
+        delete header;
+        header = p;
+    }
+}
+template<typename T>
+bool Chain<T>::empty() const {
+    return Size == 0;
+}
+template<typename T>
+int Chain<T>::size() const {
+    return Size;
+}
+template<typename T>
+T& Chain<T>::get(int index) const {
+    checkIndex(index);
+
+    chainNode<T>* p = header;
+    for (int i = 0; i < index; i++, p = p->next);
+    return p->element;
+}
+template<typename T>
+int Chain<T>::indexOf(const T& tmp) const {
+    chainNode<T>* p = header;
+    int index = 0;
+    while (p != nullptr && p->element != tmp) {
+        index++;
+        p = p->next;
+    }
+    if (p != nullptr) return index;
+    return -1;
+}
+template<typename T>
+void Chain<T>::erase(int index) {
+    checkIndex(index);
+    chainNode<T>* p = header;
+    if (index == 0)
+        header = header->next;
+    else {
+        chainNode<T>* p1 = p;
+        for (int i = 1; i < index; i++, p1 = p1->next);
+        p1->next = p1->next->next;
+        p = p1->next;
+    }
+    delete p;
+    Size--;
+}
+template<typename T>
+void Chain<T>::insert(int index, const T& tmp) {
+    if (index < 0 || index > Size) throw(illegalParameterValue());
+    if (index == 0)
+        header = new chainNode<T>(tmp, header);
+    else {
+        chainNode<T>* p = header;
+        for (int i = 1; i < index; i++, p = p->next);
+        p->next = new chainNode<T>(tmp, p->next);
+    }
+    Size++;
+}
+template<typename T>
+void Chain<T>::output(ostream& out) const {
+    for (chainNode<T>* p = header; p != nullptr; p = p->next, out << p->element);
+}
+template<typename T>
+ostream& operator << (ostream& out, const Chain<T>* tmp) {
+    tmp.output(out);
+    return out;
+}
+
+template<typename T>
+void Chain<T>::binSort(int range) {
+    chainNode<T>** bottom, ** top;
+    bottom = new chainNode<T>*[range + 1](nullptr);
+    top = new chainNode<T>*[range + 1](nullptr);
+    for (; header != nullptr; header = header->next) {
+        int index = header->element;
+        if (bottom[index] == nullptr)
+            bottom[index] = header;
+        else {
+            top[index]->next = header;
+            top[index] = header;
+        }
+    }
+    chainNode<T>* tmp = nullptr;
+    for (int index = 0; index <= range; index++) {
+        if (bottom[index] == nullptr) continue;
+        if (tmp == nullptr) header = bottom[index];
+        else tmp->next = bottom[index];
+        tmp = top[index];
+    }
+    if (tmp != nullptr) tmp->next = nullptr;
+    delete[] bottom;
+    delete[] top;
+}
