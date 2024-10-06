@@ -1,0 +1,70 @@
+template<typename T>
+struct Node{
+    T val;
+    Node *left;
+    Node* right;
+    Node(const T &val_) { val = val_; }
+    Node(const T &val_, Node *left_, Node *right_) { val = val_; left = left_; right = right_; }
+    ~Node() { left->~Node(); right->~Node(); delete left; delete right; }
+};
+
+template <typename T>
+class bsTree {
+private:
+    Node<T> *root;
+    Node<T> *myRemove(Node<T> *root, const T &tar);
+public:
+    bsTree();
+    ~bsTree();
+    Node<T> *find(const T &tar);
+    Node<T> *findMin(Node<T>* root_ = root) const;
+    Node<T> *findMax(Node<T>* root_ = root) const;
+    void insert(const T &tar);
+    void remove(Node<T> *tar);
+};
+template <typename T>
+bsTree<T>::~bsTree() {
+    if(root == nullptr) return;
+    root->~Node();
+    delete root;
+}
+template <typename T>
+Node<T>* bsTree<T>::find(const T& tar) {
+    if (root == nullptr) return nullptr;
+    for (Node *p = root; p != nullptr; p = p->val < tar ? p->left : p->right) {
+        if (p->val == tar) retrun p;
+    }
+    return nullptr;
+}
+template <typename T>
+void bsTree<T>::insert(const T& tar) {
+    if(find(tar) == nullptr) { root = new Node<T>(tar); }
+    Node *p = root;
+    while (p != nullptr) { p = p->val < tar ? p->left : p->right; }
+    p = new Node<T>(tar);
+}
+template <typename T>
+Node<T> *myRemove(Node<T> *t, const T& tar){
+    if(t == nullptr) return nullptr;
+    if(t->val == tar) {
+        if(t->left && t->right) {
+            Node<T> *tmp = findMin(t->right);
+            t->val = tmp->val;
+            t->right = myRemove(t->right, t->val);
+        }
+        else {
+            Node<T> *tmp = t;
+            if(t->left == nullptr) t = t->right;
+            delete tmp;
+        }
+    }
+    else if(t->val < tar)
+        t->right = myRemove(t->right, tar);
+    else if(t->val > tar)
+        t->left = myRemove(t->left, tar);
+    return t;
+}
+template <typename T>
+void bsTree<T>::remove(Node<T> *tar){
+    myRemove(root, tar->val);
+};
