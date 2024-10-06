@@ -1,106 +1,71 @@
-template<typename T>
-class Stack {
+template <typename T>
+class Stack
+{
 public:
-	virtual ~Stack() {}
-	virtual bool empty() const = 0;
-	virtual int size() const = 0;
-	virtual T& top() = 0;
-	virtual void pop() = 0;
-	virtual void push(const T& tmp) = 0;
+    virtual ~Stack() {}
+    virtual void push(const T &tmp) = 0;
+    virtual void pop() = 0;
+    virtual bool empty() const = 0;
+    virtual int size() const = 0;
+    virtual T &top() = 0;
 };
 
-//Array
-template<typename T>
-class arrayStack : public Stack<T> {
+// Array
+template <typename T>
+class arrayStack: public Stack<T>{
 private:
-	int stackTop;
-	int Capacity;
-	T* stack;
-	void changeStackCapacity();
+    int stackTop;
+    int Capacity;
+    T *stack;
+    void changeStackCapacity();
 public:
-	arrayStack(int capacity_ = 10);
-	~arrayStack() { delete stack; }
-	bool empty() const { return stackTop == -1; }
-	int size() const { return stackTop + 1; }
-	T& top();
-	void pop();
-	void push(const T& tmp);
+    arrayStack(int capacity_ = 10);
+    ~arrayStack();
+    void push(const T &tmp);
+    void pop();
+    bool empty() const;
+    int size() const;
+    T &top();
 };
-template<typename T>
-arrayStack<T>::arrayStack(int capacity_) {
-	if (capacity_ <= 0) throw illegalParameterValue();
-	stackTop = -1;
-	Capacity = capacity_;
-	T = new T[Capacity];
-}
-template<typename T>
+template <typename T>
 void arrayStack<T>::changeStackCapacity() {
-	T* tmp = new T[2*Capacity];
-	copy(stack, stack + Capacity, tmp);
+    T *tmp = new T[2 * Capacity];
+    copy(stack, stack + Capacity, tmp);
 }
-template<typename T>
-T& arrayStack<T>::top() {
-	if (!empty()) throw emptyStack();
-	return stack[stackTop];
-}
-template<typename T>
+template <typename T>
 void arrayStack<T>::pop() {
-	if (!empty()) throw emptyStack();
-	stack[stackTop--].~T();
+    if (!empty()) throw emptyStack();
+    stack[stackTop--].~T();
 }
-template<typename T>
-void arrayStack<T>::push(const T& tmp) {
-	if (stackTop == Capacity - 1) {
-		changeStackCapacity();
-		Capacity *= 2;
-	}
-	stack[++stackTop] = tmp;
+template <typename T>
+void arrayStack<T>::push(const T &tmp) {
+    if (stackTop == Capacity - 1) {
+        changeStackCapacity();
+        Capacity *= 2;
+    }
+    stack[++stackTop] = tmp;
 }
 
-
-//Chain
-template<typename T>
+// Chain
+template <typename T>
 struct chainNode {
-	T element;
-	chainNode<T>* next;
-
-	chainNode() {}
-	chainNode(const T& ele) { element = ele; }
-	chainNode(const T& ele, chainNode<T>* nxt) { element = ele; next = nxt; }
+    T element;
+    chainNode<T> *next;
+    chainNode() {}
+    chainNode(const T &ele) { element = ele; }
+    chainNode(const T &ele, chainNode<T> *nxt) { element = ele; next = nxt; }
 };
-template<typename T>
+template <typename T>
 class linkedStack : public Stack<T> {
 private:
-	chainNode<T>* stackTop;
-	int Size;
+    chainNode<T> *stackTop;
+    int Size;
 public:
-	linkedStack(int capacity_ = 10) { stackTop = nullptr; Size = 0; }
-	~linkedStack();
-	bool empty() const { return Size == 0; }
-	int size() const { return Size; }
-	T& top() {
-		if (empty()) throw emptyStack();
-		return stackTop->element;
-	}
-	void pop();
-	void push(const T& tmp) {
-		stackTop = new chainNode<T>(tmp, stackTop);
-		Size++;
-	}
+    linkedStack(int capacity_ = 10);
+    ~linkedStack();
+    void push(const T &tmp);
+    void pop();
+    bool empty() const;
+    int size() const;
+    T &top();
 };
-template<typename T>
-linkedStack<T>::~linkedStack() {
-	while (stackTop != nullptr) {
-		chainNode<T>* p = stackTop->next;
-		delete stackTop;
-		stackTop = p;
-	}
-}
-template<typename T>
-void linkedStack<T>::pop() {
-	if (empty()) throw emptyStack();
-	Size--;
-	chainNode<T>* p = stackTop->next;
-	delete stackTop;
-	stackTop = p;
-}
