@@ -44,7 +44,7 @@ void bsTree<T>::insert(const T& tar) {
     p = new Node<T>(tar);
 }
 template <typename T>
-Node<T> *myRemove(Node<T> *t, const T& tar){
+Node<T>* bsTree<T>::myRemove(Node<T> *t, const T& tar){
     if(t == nullptr) return nullptr;
     if(t->val == tar) {
         if(t->left && t->right) {
