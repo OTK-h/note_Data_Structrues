@@ -1,0 +1,25 @@
+template<class K, class V>
+struct skipNode {
+    std::pair<const K, V> Element;
+    skipNode<K, V> **next;
+    skipNode(const pair<K, V>& tar, int size) {
+        Element = tar;
+        next = new skipNode<K, V> *(size);
+    }
+};
+
+template<class K, class V>
+class skipList {
+protected:
+    skipNode<K, V> *header;
+    skipNode<K, V> *tail;
+    skipNode<K, V> **last;  //last node in level i
+    int maxLevel;
+    K maxKey;
+    int dsize;
+    int level;
+    float cutOff;
+
+public:
+
+};
