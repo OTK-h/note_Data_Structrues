@@ -1,0 +1,33 @@
+//get the number of how many methods to change the given stack sequence to the target sequence through stack
+#include <iostream>
+using namespace std;
+
+int n;
+char tmp[20], tar[20];
+
+int func(int l1, int r1, int l2, int r2) {
+    if(l1 == r1 && l2 == r2) {
+        if(tmp[l1] == tar[l2]) return 1;
+        if(tmp[l1] != tar[l2]) return 0;
+    }
+    int ret = 0;
+    for (int i = l2; i <= r2; i++) {
+        if(tar[i] == tmp[l1]) {
+            if(i == l2) 
+                ret += func(l1 + 1, r1, l2 + 1, r2);
+            else if(i == r2) 
+                ret += func(l1 + 1, r1, l2, r2 - 1);
+            else 
+                ret += func(l1+1, l1+i-l2, l2, i-1) * func(l1+i-l2+1, r1, i+1, r2);
+        }
+    }
+    return ret;
+}
+
+int main() {
+    cin>>n;
+    for (int i = 1; i <= n; i++) cin >> tmp[i];
+    for (int i = 1; i <= n; i++) cin >> tar[i];
+    cout << func(1, n, 1, n);
+    return 0;
+}
