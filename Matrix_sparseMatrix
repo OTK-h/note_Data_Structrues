@@ -1,0 +1,94 @@
+#include <iostream>
+
+const int DefaultSize = 4000000;
+
+template<class T>
+struct Trituple {
+    int row, col;
+    T val;
+    Trituple<T>() { row = col = val = 0; }
+    Trituple<T>(int r, int c, int v) { row = r, col = c, val = v; }
+};
+
+template<class T>
+class sparseMatrix {
+protected:
+    int rows, cols, cnt;
+    int maxTerms;
+    Trituple<T> *smArray;
+public:
+    sparseMatrix(int r, int c, int maxSz = DefaultSize);
+    sparseMatrix(const sparseMatrix<T> &tmp);
+    ~sparseMatrix() { delete[] smArray; }
+
+    void inputEach();
+    void inputOnly();
+    void displayEach();
+    void displayOnly();
+
+    // sparseMatrix<T> transpose();
+    // sparseMatrix<T> fastTranspose();
+    // sparseMatrix<T> add(sparseMatrix<T> tmp);
+
+    sparseMatrix<T> mul(const sparseMatrix<T> &tmp) const;
+};
+
+template <class T>
+void sparseMatrix<T>::inputEach() {
+    T tmp;
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            std::cin >> tmp;
+            if (tmp) {
+                smArray[cnt].row = i;
+                smArray[cnt].col = j;
+                smArray[cnt].val = tmp;
+                cnt++;
+            }
+        }
+    }
+}
+
+template <class T>
+sparseMatrix<T> sparseMatrix<T>::mul(const sparseMatrix<T> &tmp) const {
+    sparseMatrix result(rows, tmp.cols);
+
+    int *rowSize = new int[tmp.rows]();
+    int *rowStart = new int[tmp.rows + 1]();
+    T *temp = new T[tmp.cols];
+    for (int i = 0; i < tmp.cnt; i++) {
+        rowSize[tmp.smArray[i].row]++;
+    }
+    for (int i = 1; i <= tmp.rows; i++) {
+        rowStart[i] = rowStart[i - 1] + rowSize[i - 1];
+    }
+    int cur = 0, firet = -1;
+    int RowA, ColA, ColB;
+    while (cur < cnt) {
+        RowA = smArray[cur].row;
+        for (int i = 0; i < tmp.cols; i++)
+            temp[i] = 0;
+        while (cur < cnt && smArray[cur].row == RowA) {
+            ColA = smArray[cur].col;
+            for (int i = rowStart[ColA]; i < rowStart[ColA + 1]; i++) {
+                ColB = tmp.smArray[i].col;
+                temp[ColB] += smArray[cur].val * tmp.smArray[i].val;
+            }
+            cur++;
+        }
+        for (int i = 0; i < tmp.cols; i++) {
+            if (temp[i] != 0) {
+                firet++;
+                result.smArray[firet].row = RowA;
+                result.smArray[firet].col = i;
+                result.smArray[firet].val = temp[i];
+            }
+        }
+    }
+
+    result.cnt = firet + 1;
+    delete[] rowSize;
+    delete[] rowStart;
+    delete[] temp;
+    return result;
+}
