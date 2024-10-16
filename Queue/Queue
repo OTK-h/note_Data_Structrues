@@ -1,0 +1,82 @@
+template <typename T>
+class Queue {
+public:
+    virtual ~Queue() {}
+    virtual bool empty() const = 0;
+    virtual int size() const = 0;
+    virtual T &front() = 0;
+    virtual T &back() = 0;
+    virtual void push(const T &tmp) = 0;
+    virtual void pop() = 0;
+};
+
+// Array
+template <typename T>
+class arrayQueue : public Queue<T> {
+private:
+    T *queue;
+    int Front;
+    int Back; // after last one
+    int Capacity;
+
+public:
+    void push(const T &tmp);
+    void pop();
+    void changeQueueLength();
+};
+
+template <typename T>
+void arrayQueue<T>::changeQueueLength() {
+    T *newQueue = new T[2 * Capacity];
+    if (Front <= 1)
+        copy(queue + Front, queue + Back, newQueue);
+    else {
+        copy(queue + Front, queue + Capacity, newQueue);
+        copy(queue, queue + Back, newQueue + Capacity - Front + 1);
+    }
+    Front = 0;
+    Back = Capacity - 1;
+    Capacity *= 2;
+    delete[] queue;
+    queue = newQueue;
+}
+
+template <typename T>
+void arrayQueue<T>::push(const T &tmp) {
+    if ((Back + 1) % Capacity == Front)
+        changeQueueLength();
+    Back = (Back + 1) % Capacity;
+    queue[Back] = tmp;
+}
+
+template <typename T>
+void arrayQueue<T>::pop() {
+    if (Front == Back)
+        throw emptyQueue();
+    queue[Front].~T();
+    Front = (Front + 1) % Capacity;
+}
+
+// Chain
+template <typename T>
+struct chainNode {
+    T element;
+    chainNode<T> *next;
+
+    chainNode() {}
+    chainNode(const T &ele) { element = ele; }
+    chainNode(const T &ele, chainNode<T> *nxt) {
+        element = ele;
+        next = nxt;
+    }
+};
+template <typename T>
+class chainQueue : public Queue<T> {
+private:
+    chainNode<T> *Front;
+    chainNode<T> *Back;
+    int Size;
+
+public:
+
+};
