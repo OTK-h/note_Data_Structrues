@@ -1,0 +1,26 @@
+//arr[i], v[i] = arr[i] - arr[j] => j > i && arr[j] < arr[i]
+//if min j not exit, v[i] = arr[i]
+//fun() return sum(v[i])
+
+int myPush(stack<int> s, const int& ele) {
+    int ret = 0;
+    while(!s.empty() && s.top() > ele) {
+        ret += s.top() - ele;
+        s.pop();
+    }
+    s.push(ele);
+    return ret;
+}
+
+int func(const int* arr, int len) {
+    int ret = 0;
+    stack<int> s;
+    for (int i = 0; i < len; i++) {
+        ret += myPush(s, arr[i]);
+    }
+    while(!s.empty()) {
+        ret += s.top();
+        s.pop();
+    }
+    return ret;
+}
