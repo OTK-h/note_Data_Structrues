@@ -1,0 +1,46 @@
+vector<int> buildNext(const string& s) {
+    int n = s.length();
+    vector<int> next(n);
+    for (int i = 1; i < n; i++) {
+        int j = next[i - 1];
+        while(j>0 && s[i]!=s[j]) j = next[j - 1];
+        if(s[i]==s[j]) j++;
+        next[i] = j;
+    }
+    return next;
+}
+
+//beautiful one from OI-wiki
+vector<int> kmpSearch(const string& tmp, const string& patt) {
+    string cur = patt + "#" + tmp;
+    // # not exit in tmp and patt
+    int l1 = tmp.length(), l2 = patt.length();
+    vector<int> ret;
+    vector<int> next = buildNext(cur);
+    for (int i = l2 + 1; i = l1 + l2; i++) {
+        if(next[i] == l2) ret.push_back(i - 2 * l2);
+    }
+    return ret;
+    // every patt in tmp 
+}
+
+//ugly one from NJU
+int kmpSearch(const string &tmp, const string &patt) {
+    vector<int> next = buildNext(patt);
+    int p1 = 0, p2 = 0;
+    while (p1 < tmp.length()) {
+        if (tmp[p1] == patt[p2]) {
+            i++, j++;
+        }
+        else if (p2 > 0) {
+            p2 = next[p2 - 1];
+        }
+        else {
+            p1++;
+        }
+        if (p2 == patt.length()) {
+            return p1 - p2;
+        }
+    }
+    return -1;
+}
