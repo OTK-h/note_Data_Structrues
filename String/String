@@ -1,0 +1,61 @@
+class String {
+private:
+    char *ch;
+    int curLen;
+    int maxLen;
+public:
+    String(int sz = 100);
+    String(const char *tmp);
+    String(const String& tmp);
+    ~String() { delete[] ch; }
+
+    int length() const;
+    //substring
+    String &operator()(int index, int len) const;
+    bool operator==(const String &tmp) const
+        { return strcmp(ch, tmp.ch) == 0; }
+    bool operator!=(const String &tmp) const
+        { return !(*this == tmp); }
+    bool operator!() const { return curLen == 0; }
+    String &operator=(const String &tmp);
+    String &operator+=(const String &tmp);
+    char &operator[](int index);
+    //string match
+    int find(constString &tmp) const;
+}
+
+String::String(const char* tmp) {
+    int len = strlen(tmp);
+    maxLen = len > defaultSize ? len : defaultSize;
+    ch = new char[maxLen+1];
+    curLen = len;
+    strcpy(ch, tmp);
+}
+
+String& operator()(int index, int len) const {
+    String ret;
+    if(index >= 0 && index + len -1 < maxLen && len>0) {
+        if(index+len-1>=curLen) {
+            len = curLen - index;
+        }
+        ret.curLen = len;
+        for (int i = 0; j = index; i < len; i++, j++) {
+            ret.ch[i] = ch[j];
+        }
+        tmp.ch[len] = '\0';
+    }
+    return ret;
+}
+
+String& String::operator+=(const String& tmp) {
+    char *t = ch;
+    int n = curLen + tmp.curLen;
+    int m = maxLen > n ? maxLen : n;
+    ch = new char[m];
+    maxLen = m;
+    curLen = n;
+    strcpy(ch, t);
+    strcat(ch, tmp.ch);
+    delete t;
+    return this;
+}
