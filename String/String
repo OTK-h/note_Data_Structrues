@@ -11,7 +11,7 @@ public:
 
     int length() const;
     //substring
-    String &operator()(int index, int len) const;
+    String &substr(int index, int len) const;
     bool operator==(const String &tmp) const
         { return strcmp(ch, tmp.ch) == 0; }
     bool operator!=(const String &tmp) const
@@ -32,7 +32,7 @@ String::String(const char* tmp) {
     strcpy(ch, tmp);
 }
 
-String& operator()(int index, int len) const {
+String& String::substr(int index, int len) const {
     String ret;
     if(index >= 0 && index + len -1 < maxLen && len>0) {
         if(index+len-1>=curLen) {
