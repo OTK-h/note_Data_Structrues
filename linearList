@@ -34,6 +34,7 @@ public:
     void output(ostream &out) const;
     int capacity() const;
 };
+
 template <typename T>
 void arrayList<T>::changeArrayCapacity() {
     T *tmp = new T[Capacity*2];
@@ -42,6 +43,13 @@ void arrayList<T>::changeArrayCapacity() {
     Capacity *= 2;
     Elements = tmp;
 }
+
+template <typename T>
+void arrayList<T>::checkIndex(int index) const {
+    if (index < 0 || index >= Size)
+        throw illegalParameterValue();
+}
+
 template <typename T>
 arrayList<T>::arrayList(const arrayList<T> &tmp){
     Capacity = tmp.Capacity;
@@ -49,24 +57,21 @@ arrayList<T>::arrayList(const arrayList<T> &tmp){
     Elements = new T[Capacity];
     std::copy(tmp.Elements, tmp.Elements + Size, ELements);
 }
-template <typename T>
-void arrayList<T>::checkIndex(int index) const {
-    if (index < 0 || index >= Size)
-        throw illegalParameterValue();
-}
+
 template <typename T>
 int arrayList<T>::indexOf(const T &tmp) const {
     int ret = (int)(std::find(Elements, Elements + Size, tmp) - Elements);
-    if (ret == Size)
-        return -1;
+    if (ret == Size) return -1;
     return ret;
 }
+
 template <typename T>
 void arrayList<T>::erase(int index) {
     checkIndex(index);
     std::copy(Elements + index + 1, Elements + Size, Elements + index);
     Elements[--Size].~T();
 }
+
 template <typename T>
 void arrayList<T>::insert(int index, const T &tmp) {
     if (index < 0 || index > Size)
@@ -77,10 +82,12 @@ void arrayList<T>::insert(int index, const T &tmp) {
     Elements[index] = tmp;
     Size++;
 }
+
 template <typename T>
 void arrayList<T>::output(ostream &out) const{
     std::copy(Elements, Elements + Size, ostream_iterator<T>(cout, ""));
 }
+
 template <typename T>
 ostream &operator<<(ostream &out, const arrayList<T> &tmp){
     tmp.output(out);
@@ -110,6 +117,7 @@ public:
     vector<T>::iterator begin();
     vector<T>::iterator end();
 };
+
 template <typename T>
 vectorList<T>::vectorList(int capacity_) {
     if (capacity < 1)
@@ -117,22 +125,6 @@ vectorList<T>::vectorList(int capacity_) {
     ELements = new vector<T>;
     Elements->reserve(capacity_);
     // resize()
-}
-template <typename T>
-T &vectorList<T>::get(int index) const {
-    checkIndex(index);
-    return Elements[index];
-}
-template <typename T>
-void vectorList<T>::erase(int index){
-    checkIndex(index);
-    Elements->erase(Elements.begin() + index);
-}
-template <typename T>
-void vectorList<T>::insert(int index, const T &tmp){
-    if (index < 0 || index > Size)
-        throw illegalParameterValue();
-    Elements->insert(Elements->begin() + index, tmp);
 }
 
 // Chain
@@ -145,6 +137,7 @@ struct chainNode{
     chainNode(const T &ele) { element = ele; }
     chainNode(const T &ele, chainNode<T> *nxt) { element = ele; next = nxt; }
 };
+
 template <typename T>
 class Chain : public linearList<T> {
 protected:
@@ -165,54 +158,7 @@ public:
 
     void binSort(int range);
 };
-template <typename T>
-Chain<T>::Chain(const Chain<T> &tmp)
-{
-    Size = tmp.Size;
-    if (Size == 0) {
-        header = nullptr;
-        return;
-    }
-    header = new Chain<T>(tmp.header->element);
-    chainNode<T> *nxt = tmp.header->next;
-    chainNode<T> *cur = header;
-    while (nxt != nullptr) {
-        nur->next = new chainNode(nxt);
-        nxt = nxt->next;
-        cur = cur->next;
-    }
-    nur->next = nullptr;
-}
-template <typename T>
-T &Chain<T>::get(int index) const{
-    checkIndex(index);
-    chainNode<T> *p = header;
-    for (int i = 0; i < index; i++, p = p->next);
-    return p->element;
-}
-template <typename T>
-int Chain<T>::indexOf(const T &tmp) const {
-    chainNode<T> *p = header;
-    int index = 0;
-    for (; p != nullptr && p->element != tmp; index++, p = p->next);
-    if (p != nullptr) return index;
-    return -1;
-}
-template <typename T>
-void Chain<T>::erase(int index){
-    checkIndex(index);
-    chainNode<T> *p = header;
-    if (index == 0)
-        header = header->next;
-    else {
-        chainNode<T> *p1 = p;
-        for (int i = 1; i < index; i++, p1 = p1->next);
-        p1->next = p1->next->next;
-        p = p1->next;
-    }
-    delete p;
-    Size--;
-}
+
 template <typename T>
 void Chain<T>::insert(int index, const T &tmp) {
     if (index < 0 || index > Size)
@@ -226,10 +172,12 @@ void Chain<T>::insert(int index, const T &tmp) {
     }
     Size++;
 }
+
 template <typename T>
 void Chain<T>::output(ostream &out) const {
     for (chainNode<T> *p = header; p != nullptr; p = p->next, out << p->element);
 }
+
 template <typename T>
 ostream &operator<<(ostream &out, const Chain<T> *tmp) {
     tmp.output(out);
