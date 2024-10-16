@@ -1,0 +1,47 @@
+//a colomn graph, each colomn width 1, get the largest rectangle area
+#include <iostream>
+using namespace std;
+
+class Stack {
+public:
+    int ele[200005];
+    int p;
+    Stack() { p = -1; }
+    void push(const int& tmp) { ele[++p] = tmp; }
+    void pop() { p--; }
+    int top() { return ele[p]; }
+    bool empty() { return p < 0; }
+};
+int n;
+Stack s;
+int heights[200005];
+int left_[200005];
+int right_[200005];
+
+int largestRectangleArea() {
+    for (int i = 0; i < n; i++)
+        right_[i] = n;
+
+    for (int i = 0; i < n; i++) {
+        while (!s.empty() && heights[s.top()] >= heights[i]) {
+            right_[s.top()] = i;
+            s.pop();
+        }
+        left_[i] = s.empty() ? -1 : s.top();
+        s.push(i);
+    }
+
+    int ret = 0;
+    for (int i = 0; i < n; i++) {
+        ret = max(ret, heights[i] * (right_[i] - left_[i] - 1));
+    }
+    return ret;
+}
+
+int main() {
+    cin >> n;
+    for (int i = 0; i < n; i++)
+        cin >> heights[i];
+    cout << largestRectangleArea();
+    return 0;
+}
