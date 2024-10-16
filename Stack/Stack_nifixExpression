@@ -5,14 +5,28 @@ bool isDigit(char ch) {
 }
 
 long long myPow(long long a, long long b) {
-    if (b == 0)
-        return 1;
-    if (b == 1)
-        return a;
-    if (b % 2 == 1)
-        return a * myPow(a * a, b / 2);
-    else
-        return myPow(a * a, b / 2);
+    if (b == 0) return 1;
+    if (b == 1) return a;
+    if (b % 2 ) return a * myPow(a * a, b / 2);
+    else return myPow(a * a, b / 2);
+}
+
+void set() {
+    isp['#'] = icp['#'] = 0;
+    //in stack prio
+    isp['('] = 1;
+    isp[')'] = 10;
+    isp['~'] = 8;
+    isp['^'] = 7;
+    isp['*'] = isp['/'] = 5;
+    isp['+'] = isp['-'] = 3;
+    //out stack prio
+    icp['('] = 10;
+    icp[')'] = 1;
+    icp['~'] = 9;
+    icp['^'] = 6;
+    icp['*'] = icp['/'] = 4;
+    icp['+'] = icp['-'] = 2;
 }
 
 template <typename T>
@@ -34,10 +48,12 @@ class Coculator {
 public:
     Stack<long long> S;
     string tar;
-    Coculator(string tar_) { tar = tar_; }
+    Coculator(string tar_) {
+        tar = tar_;
+        Run();
+    }
     void Run() {
-        for (char ch : tar)
-        {
+        for (char ch : tar) {
             if (isDigit(ch))
                 S.push((long long)(ch - '0'));
             else
@@ -51,8 +67,7 @@ public:
         else
             Get2Operands(left, right);
 
-        switch (op)
-        {
+        switch (op) {
         case '+':
             S.push(left + right);
             break;
@@ -90,6 +105,7 @@ public:
     Changer(string tar_) {
         tar = tar_;
         ret = "";
+        Run();
     }
     void Run() {
         for (char ch : tar) {
@@ -118,4 +134,8 @@ public:
     }
 };
 
-class func {
+long long func(const string& tmp) {
+    Changer t(tmp);
+    Coculator r(t.ret);
+    return r.S.top();
+}
