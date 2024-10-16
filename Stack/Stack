@@ -1,0 +1,71 @@
+template <typename T>
+class Stack {
+public:
+    virtual ~Stack() {}
+    virtual void push(const T &tmp) = 0;
+    virtual void pop() = 0;
+    virtual bool empty() const = 0;
+    virtual int size() const = 0;
+    virtual T &top() = 0;
+};
+
+// Array
+template <typename T>
+class arrayStack: public Stack<T> {
+private:
+    int stackTop;
+    int Capacity;
+    T *stack;
+    void changeStackCapacity();
+public:
+    arrayStack(int capacity_ = 10);
+    ~arrayStack();
+    void push(const T &tmp);
+    void pop();
+    bool empty() const;
+    int size() const;
+    T &top();
+};
+template <typename T>
+void arrayStack<T>::changeStackCapacity() {
+    T *tmp = new T[2 * Capacity];
+    copy(stack, stack + Capacity, tmp);
+}
+template <typename T>
+void arrayStack<T>::pop() {
+    if (!empty()) throw emptyStack();
+    stack[stackTop--].~T();
+}
+template <typename T>
+void arrayStack<T>::push(const T &tmp) {
+    if (stackTop == Capacity - 1) {
+        changeStackCapacity();
+        Capacity *= 2;
+    }
+    stack[++stackTop] = tmp;
+}
+
+// Chain
+template <typename T>
+struct chainNode {
+    T element;
+    chainNode<T> *next;
+    chainNode() {}
+    chainNode(const T &ele) { element = ele; }
+    chainNode(const T &ele, chainNode<T> *nxt) { element = ele; next = nxt; }
+};
+
+template <typename T>
+class linkedStack : public Stack<T> {
+private:
+    chainNode<T> *stackTop;
+    int Size;
+public:
+    linkedStack(int capacity_ = 10);
+    ~linkedStack();
+    void push(const T &tmp);
+    void pop();
+    bool empty() const;
+    int size() const;
+    T &top();
+};
