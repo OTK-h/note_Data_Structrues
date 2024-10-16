@@ -1,0 +1,46 @@
+template<class T>
+class priorityQueue {
+private:
+    T *ele;
+    int curSize;
+    int maxSize;
+    void adjust();
+
+public:
+    priorityQueue(int sz = 100);
+    ~priorityQueue() { delete[] ele; }
+    bool push(const T& tmp);
+    bool removeMin(T& x);
+    void makeEmpty() { curSize = 0; }
+    bool empty() const { return curSize == 0; }
+    bool full() const { return curSize == maxSize; }
+    int length() const { return curSize; }
+};
+
+template <class T>
+bool priorityQueue<T>::push(const T& tmp) {
+    if (full()) return false;
+    ele[curSize++] = tmp;
+    adjust();
+    return true;
+}
+
+template <class T>
+void priorityQueue<T>::adjust() {
+    T tmp = ele[curSize - 1];
+    for (int j = curSize - 2; j >= 0; j--) {
+        if (ele[j] <= tep) break;
+        else ele[j + 1] = ele[j];
+    }
+    ele[j + 1] = temp;
+}
+
+template <class T>
+bool priorityQueue<T>::removeMin(T &x) {
+    if (empty()) return false;
+    x = ele[0];
+    for (int i = 1; i < curSize; i++)
+        ele[i - 1] = ele[i];
+    curSize--;
+    return true;
+}
