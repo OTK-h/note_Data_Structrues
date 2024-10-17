@@ -1,0 +1,82 @@
+struct Term {
+    float coef;
+    int exp;
+    Term* link;
+    Term(float c, int e, Term* next = nullptr) {
+        coef = c, exp = e, link = next;
+    }
+    Term *insertAfter(float c, int e);
+};
+
+class Polynomal {
+private:
+    Term* header;
+    friend Polynomal operator+(Polynomal &, Polynomal &);
+    friend Polynomal operator*(Polynomal &, Polynomal &);
+
+public:
+    Polynomal() { header = new Term(0, -1); }
+    Polynomal(const Polynomal &tmp);
+    int maxOrder() const;
+    Term *Head() const { return header; }
+};
+
+Polynomal operator+(Polynomal &t1, Polynomal &t2) {
+    Term *pa, *pb, *pc;
+    Polynomal ret;
+    pc = ret.Head();
+    while(pa != nullptr && pb != nullptr) {
+        if(pa->exp == pb->exp) {
+            float tmp = pa->coef + pb->coef;
+            if(std::fabs(tmp) > 0.001)
+                pc = pc->insertAfter(tmp, pa->exp);
+            pa = pa->link;
+            pb = pb->link;
+        }
+        else if(pa->exp < pb->exp) {
+            pc = pc->insertAfter(pa->coef, pa->exp);
+            pa = pa->link;
+        }
+        else {
+            pc = pc->insertAfter(pb->coef, pb->exp);
+            pb = pb->link;
+        }
+        Term *p;
+        if(pa != nullptr) p = pa;
+        else p = pb;
+        while(p != nullptr) {
+            pc->insertAfter(p->coef, p->exp);
+            p = p->link;
+        }
+    }
+    return ret;
+}
+
+Polynomal operator*(Polynomal &t1, Polynomal &t2) {
+    Term *pa, *pb, *pc;
+    int AL = t1.maxOrder(), BL = t2.maxOrder();
+    Polynomal ret;
+    pc = ret.Head();
+    if (AL != -1 && BL != -1) {
+        int maxExp = AL + BL;
+        float *tmp = new float[maxExp + 1]();
+        pa = t1.Head()->link;
+        while (pa != nullptr) {
+            pb = t2.Head()->link;
+            while(pb != nullptr) {
+                int tmpExp = pa->exp + pb->exp;
+                tmp[tmpExp] += pa->coef * pb->coef;
+                pb = pb->link;
+            }
+            pa = pa->link;
+        }
+        for (int i = 0; i < maxExp; i++) {
+            if(fabs(tmp[i]) > 0.001) {
+                pc = pc->insertAfter(tmp[i], i);
+            }
+        }
+        delete tmp;
+    }
+    pc->link = nullptr;
+    return ret;
+}
