@@ -1,0 +1,185 @@
+template <typename T>
+class linearList {
+public:
+    virtual ~linerList() {};
+    virtual bool empty() const = 0;
+    virtual int size() const = 0;
+    virtual T &get(int index) const = 0;
+    virtual int indexOf(const T &tmp) const = 0;
+    virtual void erase(int index) = 0;
+    virtual void insert(int index, const T &tmp) = 0;
+    virtual void output(ostream &out) const = 0;
+};
+
+// Array
+template <typename T>
+class arrayList : public LinearList<T> {
+protected:
+    T *ELements;
+    int Capacity;
+    int Size;
+    void checkIndex(int index) const;
+    void changeArrayCapacity();
+public:
+    arrayList(int capacity_ = 10);
+    arrayList(const arrayList<T> &tmp);
+    ~arrayList();
+
+    bool empty() const;
+    int size() const;
+    T &get(int index) const;
+    int indexOf(const T &tmp) const;
+    void erase(int index);
+    void insert(int index, const T &tmp);
+    void output(ostream &out) const;
+    int capacity() const;
+};
+
+template <typename T>
+void arrayList<T>::changeArrayCapacity() {
+    T *tmp = new T[Capacity*2];
+    copy(Elements, Elements + Capacity, tmp);
+    delete[] Elements;
+    Capacity *= 2;
+    Elements = tmp;
+}
+
+template <typename T>
+void arrayList<T>::checkIndex(int index) const {
+    if (index < 0 || index >= Size)
+        throw illegalParameterValue();
+}
+
+template <typename T>
+arrayList<T>::arrayList(const arrayList<T> &tmp){
+    Capacity = tmp.Capacity;
+    Size = tmp.Size;
+    Elements = new T[Capacity];
+    std::copy(tmp.Elements, tmp.Elements + Size, ELements);
+}
+
+template <typename T>
+int arrayList<T>::indexOf(const T &tmp) const {
+    int ret = (int)(std::find(Elements, Elements + Size, tmp) - Elements);
+    if (ret == Size) return -1;
+    return ret;
+}
+
+template <typename T>
+void arrayList<T>::erase(int index) {
+    checkIndex(index);
+    std::copy(Elements + index + 1, Elements + Size, Elements + index);
+    Elements[--Size].~T();
+}
+
+template <typename T>
+void arrayList<T>::insert(int index, const T &tmp) {
+    if (index < 0 || index > Size)
+        throw illegalParameterValue();
+    if (Size == Capacity) 
+        changeArrayCapacity(Elements, Capacity, 2 * Capacity);
+    std::copy_backward(Elements + index, Elements + Size, Elements + index + 1);
+    Elements[index] = tmp;
+    Size++;
+}
+
+template <typename T>
+void arrayList<T>::output(ostream &out) const{
+    std::copy(Elements, Elements + Size, ostream_iterator<T>(cout, ""));
+}
+
+template <typename T>
+ostream &operator<<(ostream &out, const arrayList<T> &tmp){
+    tmp.output(out);
+    return out;
+}
+
+// Vector
+template <typename T>
+class vectorList : public linearList<T> {
+protected:
+    std::vector<T> *Elements;
+    void checkIndex(int index) const;
+public:
+    vectorList(int capacity_ = 10);
+    vectorList(const vectorList<T> &tmp);
+    ~vectorList();
+
+    bool empty() const;
+    int size() const;
+    T &get(int index) const;
+    int indexOf(const T &tmp) const;
+    void erase(int index);
+    void insert(int index, const T &tmp);
+    void output(ostream &out) const;
+    int capacity() const { return Elements->capacity(); }
+
+    vector<T>::iterator begin();
+    vector<T>::iterator end();
+};
+
+template <typename T>
+vectorList<T>::vectorList(int capacity_) {
+    if (capacity < 1)
+        throw illegalParameterValue();
+    ELements = new vector<T>;
+    Elements->reserve(capacity_);
+    // resize()
+}
+
+// Chain
+template <typename T>
+struct chainNode{
+    T element;
+    chainNode<T> *next;
+
+    chainNode() {}
+    chainNode(const T &ele) { element = ele; }
+    chainNode(const T &ele, chainNode<T> *nxt) { element = ele; next = nxt; }
+};
+
+template <typename T>
+class Chain : public linearList<T> {
+protected:
+    chainNode<T> *header;
+    int Size;
+    void checkIndex(int index) const;
+public:
+    Chain(const Chain<T> &tmp);
+    ~Chain();
+
+    bool empty() const;
+    int size() const;
+    T &get(int index) const;
+    int indexOf(const T &tmp) const;
+    void erase(int index);
+    void insert(int index, const T &tmp);
+    void output(ostream &out) const;
+
+    void binSort(int range);
+};
+
+template <typename T>
+void Chain<T>::insert(int index, const T &tmp) {
+    if (index < 0 || index > Size)
+        throw illegalParameterValue();
+    if (index == 0)
+        header = new chainNode<T>(tmp, header);
+    else{
+        chainNode<T> *p = header;
+        for (int i = 1; i < index; i++, p = p->next);
+        p->next = new chainNode<T>(tmp, p->next);
+    }
+    Size++;
+}
+
+template <typename T>
+void Chain<T>::output(ostream &out) const {
+    for (chainNode<T> *p = header; p != nullptr; p = p->next, out << p->element);
+}
+
+template <typename T>
+ostream &operator<<(ostream &out, const Chain<T> *tmp) {
+    tmp.output(out);
+    return out;
+}
