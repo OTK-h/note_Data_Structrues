@@ -1,0 +1,49 @@
+// establish genList from string
+template <class T>
+void genList<T>::CreateList(istream &in,
+                            genListNode<T> *&ls,
+                            seqList<T> &L1,
+                            seqList<GenListNode<T> *> &L2) {
+    // L1 store list name, L2 store list name's subList addr
+    T chr;
+    in >> chr;
+    //one char only, # ( a-z A-Z possible
+    if (isalpha(chr) && isupper(chr) || chr == '(') {
+        ls = new GenListNode<T>;
+        ls->type = 2;
+        if (isalpha(chr) && isupper(chr)) {
+            int n = L1.Length();
+            int m = L1.Search(chr);
+            if (m != 0) {
+                // exist already
+                genListNode<T> *p = L2.Locate(m);
+                ls->info.headLink = p;
+                p->ref++;
+                createList(in, ls->link, L1, L2);
+            }
+            else {
+                L1.Insert(n, chr);
+                L2.Insert(n, ls);
+                in >> chr;
+                if (chr != '(') exit(1);
+                ls->info.headLink = new GenListNode<T>;
+                ls->info.headLink->type = 0;
+                ls->info.headLink->ref = 1;
+                createList(in, ls->info.heaLink->link, L1, L2);
+            }
+        }
+        else if (isalpha(chr) && islower(chr)) {
+            // establish atomic node
+            ls = new genListNode<T>;
+            ls->type = 1;
+            ls->info.value = chr;
+            createList(in, ls, L1, L2);
+        }
+        else if (chr == ', ') //establish next list
+            createList(in, ls->link, L1, L2);
+        else if (chr == ')')
+            ls->link = nullptr; // list end
+        else if (chr == '#')
+            ls == nullptr; // empty list
+    }
+}
