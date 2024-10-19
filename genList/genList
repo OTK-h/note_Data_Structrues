@@ -1,0 +1,155 @@
+// A()                  L = 0, D = 1
+// B(6, 2)              L = 2，D = 1
+// C( ‘a’, (5, 3, ‘x’)) L = 2，D = 2
+// D(B, C, A)           L = 3, D = 3
+// E(B, D)              L = 2, D = 4
+
+template <class T>
+struct genListNode {
+    // 0 head | 1 atomNode | 2 subLink
+    int type;
+    genListNode<T> *link;
+    union {
+        int ref;
+        T val;
+        genListNode<T> *headLink;
+    } info;
+    genListNode() : type(0), link(nullptr), info(0) {}
+    genListNode(const genListNode<T>& tmp) {
+        type = tmp.type;
+        link = tmp.link;
+        info = tmp.info;
+    }
+};
+
+template<class T>
+class genList {
+private:
+    genListNode<T> *header;
+    
+    genListNode<T> *Copy(genListNode<T> *ls);
+    int Length(genListNode<T> *ls) const;
+    int Depth(genListNode<T> *ls) const;
+    bool Equal(genListNode<T> *ls1, genListNode<T> *ls2) const;
+    void Remove(genListNode<T> *ls);
+
+public:
+    genList() { header = new genListNode; }
+    ~genList() { Remove(header); }
+
+    bool Head(genListNode<T>& tmp) const;
+    bool Tail(genList<T>& lt) const;
+    genListNode<T> *First() const;
+    genListNode<T> *Next(genListNode<T> *ele) const ;
+    void Copy(const genList<T> &tmp) { header = Copy(tmp.header); }
+    int Length() const { return Length(header); }
+    int Depth() const { return Depth(header); }
+    void deleteValue(genListNode<T> *ls, const T &x);
+};
+
+template <class T>
+bool genList<T>::Head(genListNode<T>& tmp) const {
+    if(header->link == nullptr) return false;
+    tmp.type = header->link->type;
+    tmp.info = header->link->info;
+    return true;
+}
+
+template <class T>
+bool genList<T>::Tail(genList<T> &tmp) const {
+    if (header->link == nullptr) return false;
+    tmp.header->type = 0;
+    tmp.header->info = 0;
+    tmp.header->link = Copy(header->link->link);
+    return true;
+}
+
+template<class T>
+genListNode<T>* genList<T>::First() const {
+    if(header->link == nullptr) return nullptr;
+    return header->link;
+}
+
+template <class T>
+genListNode<T> *genList<T>::Next(genListNode<T>* ele) const {
+    if (ele->link == nullptr) return nullptr;
+    return header->link;
+}
+
+template <class T>
+genListNode<T>* genList<T>::Copy(genListNode<T>* tmp) {
+    genListNode<T> *ret = nullptr;
+    if(tmp != nullptr) {
+        ret = new genListNode<T>;
+        ret->type = tmp->type;
+        switch(tmp->type) {
+            case 0:
+                ret->info.ref = tmp->info.ref;
+                break;
+            case 1:
+                ret->info.val = tmp->info.val;
+                break;
+            case 2:
+                ret->info.headlink = tmp->info->headlink;
+                break;
+        }
+        ret->link = Copy(tmp->link);
+    }
+    return ret;
+}
+
+template<class T>
+int genList<T>::Depth(genListNode<T>* ls) const {
+    if(ls->link == nullptr) return 1;
+    genListNode<T> *tmp = ls->link;
+    int m = 0, n;
+    while (ls != nullptr) {
+        if (temp->type == 2) {
+            n = Depth(temp->info.hlink);
+            if (m < n) m = n;
+        }
+        ls = ls->tlink;
+    }
+    return m + 1;
+}
+
+template<class T>
+int genList<T>::Length(genListNode<T>* ls) const {
+    if(ls != nullptr) return 1 + Length(ls->link);
+    return 0;
+}
+
+template<class T>
+void deleteValue(genListNode<T>* ls, const T& x) {
+    if (ls->link != nullptr){
+        GenListNode<T> *p = ls->tlink;
+        while (p != nullptr && p->type == 1 && p->info.value == x) {
+            ls->link = p->link;
+            delete p;
+            p = ls->link;
+        }
+        if (p != nullptr) {
+            if (p->utype == 2)
+                delvalue(p->info.headLink, x);
+            delvalue(p, x);
+        }
+    }
+}
+
+template <class T>
+void genList<T>::Remove(genListNode<T> *ls) {
+    ls->info.ref--;
+    if (ls->info.ref <= 0) {
+        GenListNode<T> *q;
+        while (ls->link != nullptr) {
+            q = ls->link;
+            if (q->uype == 2) {
+                Remove(q->info.headLink);
+                if (q->info.hlink->info.ref <= 0)
+                    delete q->info.headLink;
+            }
+            ls->link = q->link;
+            delete q;
+        }
+    }
+}
