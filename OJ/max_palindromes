@@ -1,0 +1,27 @@
+// vector words contains n string
+// swap any char in any string to get the most palindromes
+
+int maxPalindromesAfterOperations(vector<string> &words) {
+    int mygo[200]();
+    sort(words, [](string a, string b){ return a.length() > b.length(); });
+    int num_of_odd_length = 0;
+    int num_of_odd_char = 0;
+    int mygo[200] = {0};
+    for (auto &i : words) {
+        num_of_odd_length += i.length() % 2;
+        for (char &j : i) mygo[j] ^= 1;
+    }
+    for (int i = 'a'; i <= 'z'; ++i)
+        num_of_odd_char += mygo[i];
+    if (num_of_odd_length >= num_of_odd_char)
+        return words.size();
+    num_of_odd_char -= num_of_odd_length;
+    int ans = words.size();
+    for (auto &i : words) {
+        if (num_of_odd_char <= 0)
+            break;
+        num_of_odd_char -= i.length() / 2 * 2;
+        --ans;
+    }
+    return ans;
+}
