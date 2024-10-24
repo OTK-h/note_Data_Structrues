@@ -1,0 +1,11 @@
+// leaf has left and right (val = -1)
+Node *merge(Node *T1, Node *T2) {
+    if (T2 == nullptr || T2->val == -1)
+        return T1;
+    if (T1 == nullptr || T1->val == -1)
+        return T2;
+    T1->val += T2->val;
+    T1->l = merge(T1->l, T2->l);
+    T1->r = merge(T1->r, T2->r);
+    return T1;
+}
