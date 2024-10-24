@@ -1,11 +1,18 @@
 template<typename T>
 struct Node{
     T val;
-    Node *left;
-    Node* right;
-    Node(const T &val_) { val = val_; }
-    Node(const T &val_, Node *left_, Node *right_) { val = val_; left = left_; right = right_; }
-    ~Node() { left->~Node(); right->~Node(); delete left; delete right; }
+    Node *left, *right;
+    Node(const T &val_, Node *left_ = nullptr, Node *right_ = nullptr) { 
+        val = val_;
+        left = left_;
+        right = right_; 
+    }
+    ~Node() {
+        left->~Node();
+        right->~Node();
+        delete left;
+        delete right;
+    }
 };
 
 template <typename T>
