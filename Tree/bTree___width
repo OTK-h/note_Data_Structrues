@@ -1,0 +1,7 @@
+//set leaf height 1
+int func(Node* p) {
+    if(p->l == nullptr && p->r == nullptr) return 1;
+    else if(p->l == nullptr) return max(func(p->r), p->r->h);
+    else if(p->r == nullptr) return max(func(p->l), p->l->h);
+    else return max3((p->l->h) + (p->r->h), func(p->l), func(p->r));
+}
