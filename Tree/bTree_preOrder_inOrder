@@ -1,0 +1,15 @@
+int pre[10000], in[10000];
+
+Node* build(int l1, int r1, int l2, int r2) {
+    if(l1 > r1) return nullptr;
+    if(l1 == r1) return new Node(pre[l1]);
+
+    Node *ret = new Node(pre[l1]);
+    
+    int p = l2;
+    while(in[p] != pre[l1]) p++;
+    
+    ret->l = build(l1 + 1, l1 + p - l2, l2, p - 1);
+    ret->r = build(l1 + p - l2 + 1, r1, p + 1, r2);
+    return ret;
+}
