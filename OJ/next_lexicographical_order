@@ -1,0 +1,22 @@
+vector<int> func(vector<int> nums) {
+    int n = nums.size();
+    vector<int> ret(nums);
+
+    int left = n - 1;
+    while (ret[left - 1] > ret[left]) left--;
+    for (int i = n - 1; i >= left; i--) {
+        if (a[i] > a[left - 1]) {
+            swap(ret[i], ret[left - 1]);
+            break;
+        }
+    }
+    int L = n - left;
+    for (int i = 1; i < L / 2; i++)
+        swap(ret[n - i], ret[n - L + i - 1]);
+    return ret;
+}
+
+// find longest decreasing suffix, length = m
+// find the num pk before suffix
+// find min num in suffix larger than pk, swap
+// reverse last m nums
